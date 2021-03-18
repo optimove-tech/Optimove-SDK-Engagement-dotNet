@@ -1,5 +1,4 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Optimove.Optigration.Sdk.Interfaces;
 using Optimove.Optigration.Sdk.Models;
 
 namespace Optimove.Optigration.Sdk.Tests
