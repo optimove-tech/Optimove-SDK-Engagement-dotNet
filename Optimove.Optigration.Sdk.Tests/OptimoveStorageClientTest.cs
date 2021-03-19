@@ -3,10 +3,10 @@ using Google.Cloud.Storage.V1;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Optimove.Optigration.Sdk.Models;
+using Optimove.Optigration.Sdk.Tests.Constants;
 using SolTechnology.Avro;
 using System;
 using System.IO;
-using static Optimove.Optigration.Sdk.Tests.Constants.ConfigurationKeys;
 
 namespace Optimove.Optigration.Sdk.Tests
 {
@@ -16,21 +16,30 @@ namespace Optimove.Optigration.Sdk.Tests
 		[TestMethod]
 		public void GetMetadataTest()
 		{
+			var bucketName = Configuration[ConfigurationKeys.FolderPath].Substring(0, Configuration[ConfigurationKeys.FolderPath].IndexOf('/'));
+			var folderPath = Configuration[ConfigurationKeys.FolderPath].Substring(bucketName.Length + 1);
 			var channelName = "Channel 1";
-			UploadMetadataTest(channelName);
+			var fileInfo = UploadMetadataTest(bucketName, folderPath, channelName);
 			var settings = new OptimoveStorageClientSettings
 			{
-				ServiceAccount = Configuration[ServiceAccount],
-				DecryptionKey = Configuration[DecryptionKey],
-				FolderPath = Configuration[FolderPath],
+				ServiceAccount = Configuration[ConfigurationKeys.ServiceAccount],
+				DecryptionKey = Configuration[ConfigurationKeys.DecryptionKey],
+				FolderPath = Configuration[ConfigurationKeys.FolderPath],
 			};
 			OptimoveStorageClient storageClient = new OptimoveStorageClient(settings);
 			var metadata = storageClient.GetMetadata();
 			Assert.IsNotNull(metadata);
 			Assert.AreEqual(metadata.ChannelName, channelName);
+			GoogleStorageClient.DeleteObject(bucketName, fileInfo.Name);
 		}
 
-		private Google.Apis.Storage.v1.Data.Object UploadMetadataTest(string channelName)
+		[TestMethod]
+		public void GetCustomersTest()
+		{
+			
+		}
+
+		private Google.Apis.Storage.v1.Data.Object UploadMetadataTest(string bucketName, string folderPath, string channelName)
 		{
 			var metadata = new Metadata
 			{
@@ -51,22 +60,13 @@ namespace Optimove.Optigration.Sdk.Tests
 				TemplateName = "Template 1",
 			};
 
-			var base64EncodedBytes = System.Convert.FromBase64String(Configuration[ServiceAccount]);
-			var jsonCredentials = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
-			var credential = GoogleCredential.FromJson(jsonCredentials);
-			var googleStorageClient = StorageClient.Create(credential);
-
-			var data = AvroConvert.Serialize(metadata);
-			var stream = new MemoryStream(data);
-			var bucketName = Configuration[FolderPath].Substring(0, Configuration[FolderPath].IndexOf('/'));
-			var folderPath = Configuration[FolderPath].Substring(bucketName.Length + 1);
-
+			var stream = new MemoryStream(AvroConvert.Serialize(metadata));
 			var uploadOptions = new UploadObjectOptions
 			{
-				EncryptionKey = EncryptionKey.Create(Convert.FromBase64String(Configuration[DecryptionKey]))
+				EncryptionKey = EncryptionKey.Create(Convert.FromBase64String(Configuration[ConfigurationKeys.DecryptionKey]))
 			};
 			
-			return googleStorageClient.UploadObject(bucketName, $"{folderPath}/METADATA_{DateTime.Now.Ticks}.avro", null, stream, uploadOptions);
+			return GoogleStorageClient.UploadObject(bucketName, $"{folderPath}/METADATA_{DateTime.Now.Ticks}.avro", null, stream, uploadOptions);
 		}
 	}
 }
