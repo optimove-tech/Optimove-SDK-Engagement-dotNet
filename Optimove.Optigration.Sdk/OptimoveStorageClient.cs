@@ -2,6 +2,7 @@
 using Google.Cloud.Storage.V1;
 using Optimove.Optigration.Sdk.Interfaces;
 using Optimove.Optigration.Sdk.Models;
+using SolTechnology.Avro;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,6 +19,7 @@ namespace Optimove.Optigration.Sdk
 		private StorageClient _googleStorageClient;
 		private string _bucketName = String.Empty;
 		private string _folderPath = String.Empty;
+		private string _decryptionKey = String.Empty;
 
 		/// <summary>
 		/// Constructs OptimoveStorageClient object.
@@ -29,9 +31,9 @@ namespace Optimove.Optigration.Sdk
 			var jsonCredentials = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
 			var credential = GoogleCredential.FromJson(jsonCredentials);
 			_googleStorageClient = StorageClient.Create(credential);
-
+			_decryptionKey = settings.DecryptionKey;
 			_bucketName = settings.FolderPath.Substring(0, settings.FolderPath.IndexOf('/'));
-			_folderPath = settings.FolderPath.Remove(0, _bucketName.Length + 1);
+			_folderPath = settings.FolderPath.Substring(_bucketName.Length + 1);
 		}
 
 		/// <summary>
@@ -40,9 +42,14 @@ namespace Optimove.Optigration.Sdk
 		/// <returns>Customers metadata object.</returns>
 		public Metadata GetMetadata()
 		{
-			//var filePath = $"{_settings.FolderPath}/{_settings.MetedataFileName}";
-			//var data = DownloadFile(_settings.BucketName, filePath, _settings.DecryptionKey);
-			return null;
+			var fileInfo = GetFileInfo(_bucketName, $"{_folderPath}/{MetadataFileNamePrefix}");
+			if(fileInfo == null)
+			{
+				return null;
+			}
+			var data = DownloadFile(_bucketName, fileInfo.Name, _decryptionKey);
+			var metadata = AvroConvert.Deserialize<Metadata>(data);
+			return metadata;
 		}
 
 		/// <summary>
@@ -63,27 +70,16 @@ namespace Optimove.Optigration.Sdk
 		/// <returns>File content.</returns>
 		private byte[] DownloadFile(string bucketName, string filePath, string decryptionKey = null)
 		{
-			try
+			using (var stream = new MemoryStream())
 			{
-				if (GetFileInfo(bucketName, filePath) == null)
+				var downloadOptions = new DownloadObjectOptions();
+				if (!String.IsNullOrEmpty(decryptionKey))
 				{
-					return null;
+					downloadOptions.EncryptionKey = EncryptionKey.Create(Convert.FromBase64String(decryptionKey));
 				}
-				using (var stream = new MemoryStream())
-				{
-					var downloadOptions = new DownloadObjectOptions();
-					if (!String.IsNullOrEmpty(decryptionKey))
-					{
-						downloadOptions.EncryptionKey = EncryptionKey.Create(Convert.FromBase64String(decryptionKey));
-					}
-					_googleStorageClient.DownloadObject(bucketName, filePath, stream, downloadOptions);
-					stream.Position = 0;
-					return stream.ToArray();
-				}
-			}
-			catch
-			{
-				return null;
+				_googleStorageClient.DownloadObject(bucketName, filePath, stream, downloadOptions);
+				stream.Position = 0;
+				return stream.ToArray();
 			}
 		}
 
@@ -95,15 +91,8 @@ namespace Optimove.Optigration.Sdk
 		/// <returns>File metadata.</returns>
 		private Google.Apis.Storage.v1.Data.Object GetFileInfo(string bucketName, string filePath)
 		{
-			try
-			{
-				var file = _googleStorageClient.ListObjects(bucketName, filePath).FirstOrDefault();
-				return file;
-			}
-			catch
-			{
-				return null;
-			}
+			var file = _googleStorageClient.ListObjects(bucketName, filePath).FirstOrDefault();
+			return file;
 		}
 	}
 }
