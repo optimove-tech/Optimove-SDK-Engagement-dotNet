@@ -19,14 +19,14 @@ namespace Optimove.Optigration.Sdk.Tests
 			var bucketName = Configuration[ConfigurationKeys.FolderPath].Substring(0, Configuration[ConfigurationKeys.FolderPath].IndexOf('/'));
 			var folderPath = Configuration[ConfigurationKeys.FolderPath].Substring(bucketName.Length + 1);
 			var channelName = "Channel 1";
-			var fileInfo = UploadMetadataTest(bucketName, folderPath, channelName);
+			var fileInfo = UploadMetadataFile(bucketName, folderPath, channelName);
 			var settings = new OptimoveStorageClientSettings
 			{
 				ServiceAccount = Configuration[ConfigurationKeys.ServiceAccount],
 				DecryptionKey = Configuration[ConfigurationKeys.DecryptionKey],
 				FolderPath = Configuration[ConfigurationKeys.FolderPath],
 			};
-			OptimoveStorageClient storageClient = new OptimoveStorageClient(settings);
+			var storageClient = new OptimoveStorageClient(settings);
 			var metadata = storageClient.GetMetadata();
 			Assert.IsNotNull(metadata);
 			Assert.AreEqual(metadata.ChannelName, channelName);
@@ -36,10 +36,30 @@ namespace Optimove.Optigration.Sdk.Tests
 		[TestMethod]
 		public void GetCustomersTest()
 		{
-			
+			var bucketName = Configuration[ConfigurationKeys.FolderPath].Substring(0, Configuration[ConfigurationKeys.FolderPath].IndexOf('/'));
+			var folderPath = Configuration[ConfigurationKeys.FolderPath].Substring(bucketName.Length + 1);
+			var fileInfo = UploadCustomersFile(bucketName, folderPath);
+			var settings = new OptimoveStorageClientSettings
+			{
+				ServiceAccount = Configuration[ConfigurationKeys.ServiceAccount],
+				DecryptionKey = Configuration[ConfigurationKeys.DecryptionKey],
+				FolderPath = Configuration[ConfigurationKeys.FolderPath],
+			};
+			var storageClient = new OptimoveStorageClient(settings);
+			storageClient.GetCustomers();
 		}
 
-		private Google.Apis.Storage.v1.Data.Object UploadMetadataTest(string bucketName, string folderPath, string channelName)
+		private Google.Apis.Storage.v1.Data.Object UploadCustomersFile(string bucketName, string folderPath)
+		{
+			var stream = new MemoryStream(Resources.customers);
+			var uploadOptions = new UploadObjectOptions
+			{
+				EncryptionKey = EncryptionKey.Create(Convert.FromBase64String(Configuration[ConfigurationKeys.DecryptionKey]))
+			};
+			return GoogleStorageClient.UploadObject(bucketName, $"{folderPath}/{DateTime.Now.Ticks}.avro", null, stream, uploadOptions);
+		}
+
+		private Google.Apis.Storage.v1.Data.Object UploadMetadataFile(string bucketName, string folderPath, string channelName)
 		{
 			var metadata = new Metadata
 			{

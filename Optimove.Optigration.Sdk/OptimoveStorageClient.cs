@@ -42,7 +42,7 @@ namespace Optimove.Optigration.Sdk
 		/// <returns>Customers metadata object.</returns>
 		public Metadata GetMetadata()
 		{
-			var fileInfo = GetFileInfo(_bucketName, $"{_folderPath}/{MetadataFileNamePrefix}");
+			var fileInfo = GetFiles(_bucketName, $"{_folderPath}/{MetadataFileNamePrefix}").Single();
 			if(fileInfo == null)
 			{
 				return null;
@@ -58,6 +58,7 @@ namespace Optimove.Optigration.Sdk
 		/// <returns>Customers collection.</returns>
 		public IEnumerable<Customer> GetCustomers()
 		{
+			var files = GetFiles(_bucketName, _folderPath);
 			return null;
 		}
 
@@ -89,10 +90,10 @@ namespace Optimove.Optigration.Sdk
 		/// <param name="bucketName">Bucket name.</param>
 		/// <param name="filePath">File path.</param>
 		/// <returns>File metadata.</returns>
-		private Google.Apis.Storage.v1.Data.Object GetFileInfo(string bucketName, string filePath)
+		private List<Google.Apis.Storage.v1.Data.Object> GetFiles(string bucketName, string filePath)
 		{
-			var file = _googleStorageClient.ListObjects(bucketName, filePath).FirstOrDefault();
-			return file;
+			var files = _googleStorageClient.ListObjects(bucketName, filePath, new ListObjectsOptions()).ToList();
+			return files;
 		}
 	}
 }
