@@ -58,7 +58,10 @@ namespace Optimove.Optigration.Sdk
 		/// <returns>Customers collection.</returns>
 		public IEnumerable<Customer> GetCustomers()
 		{
+			//TODO: Add Exceptions handling
+			//TODO: Add async / await
 			var files = GetFiles(_bucketName, _folderPath);
+			
 			return null;
 		}
 
