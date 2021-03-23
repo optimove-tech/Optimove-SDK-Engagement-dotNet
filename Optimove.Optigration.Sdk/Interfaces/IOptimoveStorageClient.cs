@@ -1,7 +1,9 @@
 ﻿using Optimove.Optigration.Sdk.Models;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Optimove.Optigration.Sdk.Interfaces
 {
@@ -14,12 +16,12 @@ namespace Optimove.Optigration.Sdk.Interfaces
 		/// Retrieves customers Metadata.
 		/// </summary>
 		/// <returns>Customers metadata object.</returns>
-		Metadata GetMetadata();
+		Task<Metadata> GetMetadata();
 
 		/// <summary>
 		/// Retrieves customers collection.
 		/// </summary>
 		/// <returns>Customers collection.</returns>
-		IEnumerable<Customer> GetCustomers();
+		Task<List<ExpandoObject>> GetCustomers();
 	}
 }

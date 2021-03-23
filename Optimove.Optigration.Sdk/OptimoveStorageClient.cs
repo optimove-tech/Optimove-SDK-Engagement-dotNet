@@ -1,12 +1,16 @@
 ﻿using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
+using Newtonsoft.Json;
+using Optimove.Optigration.Sdk.Exceptions;
 using Optimove.Optigration.Sdk.Interfaces;
 using Optimove.Optigration.Sdk.Models;
 using SolTechnology.Avro;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Optimove.Optigration.Sdk
 {
@@ -40,29 +44,48 @@ namespace Optimove.Optigration.Sdk
 		/// Retrieves customers Metadata.
 		/// </summary>
 		/// <returns>Customers metadata object.</returns>
-		public Metadata GetMetadata()
+		public async Task<Metadata> GetMetadata()
 		{
-			var fileInfo = GetFiles(_bucketName, $"{_folderPath}/{MetadataFileNamePrefix}").Single();
-			if(fileInfo == null)
+			try
 			{
-				return null;
+				var fileInfo = GetFiles(_bucketName, $"{_folderPath}/{MetadataFileNamePrefix}").Single();
+				if (fileInfo == null)
+				{
+					return null;
+				}
+				var data = await DownloadFile(_bucketName, fileInfo.Name, _decryptionKey);
+				var metadata = AvroConvert.Deserialize<Metadata>(data);
+				return metadata;
 			}
-			var data = DownloadFile(_bucketName, fileInfo.Name, _decryptionKey);
-			var metadata = AvroConvert.Deserialize<Metadata>(data);
-			return metadata;
+			catch(Exception ex)
+			{
+				throw new OptimoveException(ex.Message, ex);
+			}
 		}
 
 		/// <summary>
 		/// Retrieves customers collection.
 		/// </summary>
 		/// <returns>Customers collection.</returns>
-		public IEnumerable<Customer> GetCustomers()
+		public async Task<List<ExpandoObject>> GetCustomers()
 		{
-			//TODO: Add Exceptions handling
-			//TODO: Add async / await
-			var files = GetFiles(_bucketName, _folderPath);
-			
-			return null;
+			try
+			{
+				var customers = new List<ExpandoObject>();
+				var files = GetFiles(_bucketName, _folderPath).Where(f => !f.Name.StartsWith($"{_folderPath}/{MetadataFileNamePrefix}"));
+				foreach (var file in files)
+				{
+					var avro = await DownloadFile(_bucketName, file.Name, _decryptionKey);
+					var json = AvroConvert.Avro2Json(avro);
+					var batch = JsonConvert.DeserializeObject<List<ExpandoObject>>(json);
+					customers.AddRange(batch);
+				}
+				return customers;
+			}
+			catch(Exception ex)
+			{
+				throw new OptimoveException(ex.Message, ex);
+			}
 		}
 
 		/// <summary>
@@ -72,7 +95,7 @@ namespace Optimove.Optigration.Sdk
 		/// <param name="filePath">File path.</param>
 		/// <param name="decryptionKey">Decryption key.</param>
 		/// <returns>File content.</returns>
-		private byte[] DownloadFile(string bucketName, string filePath, string decryptionKey = null)
+		private async Task<byte[]> DownloadFile(string bucketName, string filePath, string decryptionKey = null)
 		{
 			using (var stream = new MemoryStream())
 			{
@@ -81,7 +104,7 @@ namespace Optimove.Optigration.Sdk
 				{
 					downloadOptions.EncryptionKey = EncryptionKey.Create(Convert.FromBase64String(decryptionKey));
 				}
-				_googleStorageClient.DownloadObject(bucketName, filePath, stream, downloadOptions);
+				await _googleStorageClient.DownloadObjectAsync(bucketName, filePath, stream, downloadOptions);
 				stream.Position = 0;
 				return stream.ToArray();
 			}
