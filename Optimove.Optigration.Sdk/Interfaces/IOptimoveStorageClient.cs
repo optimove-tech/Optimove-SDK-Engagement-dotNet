@@ -22,6 +22,6 @@ namespace Optimove.Optigration.Sdk.Interfaces
 		/// Retrieves customers collection.
 		/// </summary>
 		/// <returns>Customers collection.</returns>
-		Task<List<ExpandoObject>> GetCustomers();
+		Task<List<T>> GetCustomers<T>();
 	}
 }

@@ -48,7 +48,7 @@ namespace Optimove.Optigration.Sdk.Tests
 				FolderPath = Configuration[ConfigurationKeys.FolderPath],
 			};
 			var storageClient = new OptimoveStorageClient(settings);
-			var customers = await storageClient.GetCustomers();
+			var customers = await storageClient.GetCustomers<TestObject>();
 			Assert.AreEqual(customers.Count, 10);
 			GoogleStorageClient.DeleteObject(bucketName, fileInfo.Name);
 		}

@@ -67,17 +67,16 @@ namespace Optimove.Optigration.Sdk
 		/// Retrieves customers collection.
 		/// </summary>
 		/// <returns>Customers collection.</returns>
-		public async Task<List<ExpandoObject>> GetCustomers()
+		public async Task<List<T>> GetCustomers<T>()
 		{
 			try
 			{
-				var customers = new List<ExpandoObject>();
+				var customers = new List<T>();
 				var files = GetFiles(_bucketName, _folderPath).Where(f => !f.Name.StartsWith($"{_folderPath}/{MetadataFileNamePrefix}"));
 				foreach (var file in files)
 				{
 					var avro = await DownloadFile(_bucketName, file.Name, _decryptionKey);
-					var json = AvroConvert.Avro2Json(avro);
-					var batch = JsonConvert.DeserializeObject<List<ExpandoObject>>(json);
+					var batch = AvroConvert.Deserialize<List<T>>(avro);
 					customers.AddRange(batch);
 				}
 				return customers;
