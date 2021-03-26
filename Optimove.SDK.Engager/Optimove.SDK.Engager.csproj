@@ -3,12 +3,29 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <UserSecretsId>bc91e2c7-c455-40a5-89c4-60c5fcbfdab3</UserSecretsId>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Optimove</Authors>
+    <Description>SDK for Engagers intergration with Optimove</Description>
+    <PackageProjectUrl>https://www.optimove.com/</PackageProjectUrl>
+    <PackageIcon>optimove_logo.jpg</PackageIcon>
+    <RepositoryUrl>https://github.com/optimove-tech/Optimove-SDK-Engagement-dotNet.git</RepositoryUrl>
+    <PackageId>OptimoveSdk.Engager.Integration</PackageId>
+    <PackageTags>Optimove, SDK, Engagement, Engager, Integration</PackageTags>
+    <Product>Optimove.Engager.Integration.SDK</Product>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AvroConvert" Version="2.7.1" />
     <PackageReference Include="Google.Cloud.Storage.V1" Version="3.4.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\1\optimove_logo.jpg">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
