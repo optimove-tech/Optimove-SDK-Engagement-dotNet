@@ -1,11 +1,8 @@
-﻿using Optimove.Optigration.Sdk.Models;
-using System;
+﻿using Optimove.SDK.Engager.Models;
 using System.Collections.Generic;
-using System.Dynamic;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Optimove.Optigration.Sdk.Interfaces
+namespace Optimove.SDK.Engager.Interfaces
 {
 	/// <summary>
 	/// Implementation of this interface incapsulates Optimove Cloud Storage (OCS) integration logic.

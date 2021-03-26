@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Optimove.Optigration.Sdk\Optimove.Optigration.Sdk.csproj" />
+    <ProjectReference Include="..\Optimove.SDK.Engager\Optimove.SDK.Engager.csproj" />
   </ItemGroup>
 
 </Project>

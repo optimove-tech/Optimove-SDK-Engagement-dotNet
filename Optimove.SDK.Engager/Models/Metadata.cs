@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Optimove.Optigration.Sdk.Models
+namespace Optimove.SDK.Engager.Models
 {
 	/// <summary>
 	/// Metadata object.

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Optimove.Optigration.Sdk.Exceptions
+namespace Optimove.SDK.Engager.Exceptions
 {
 	/// <summary>
 	/// Optimove Exception.

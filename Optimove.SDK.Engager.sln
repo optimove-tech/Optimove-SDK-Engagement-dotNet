@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31105.61
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Optimove.Optigration.Sdk", "Optimove.Optigration.Sdk\Optimove.Optigration.Sdk.csproj", "{6BB6F9D8-DCD3-4B36-B69B-2BC13C7314ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Optimove.SDK.Engager", "Optimove.SDK.Engager\Optimove.SDK.Engager.csproj", "{6BB6F9D8-DCD3-4B36-B69B-2BC13C7314ED}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Optimove.Optigration.Sdk.Tests", "Optimove.Optigration.Sdk.Tests\Optimove.Optigration.Sdk.Tests.csproj", "{D8B1C168-08FB-4780-BBE4-721715CAD714}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Optimove.SDK.Engager.Tests", "Optimove.SDK.Engager.Tests\Optimove.SDK.Engager.Tests.csproj", "{D8B1C168-08FB-4780-BBE4-721715CAD714}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

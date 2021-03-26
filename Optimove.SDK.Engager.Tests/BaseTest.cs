@@ -2,9 +2,9 @@
 using Google.Cloud.Storage.V1;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Optimove.Optigration.Sdk.Tests.Constants;
+using Optimove.SDK.Engager.Tests.Constants;
 
-namespace Optimove.Optigration.Sdk.Tests
+namespace Optimove.SDK.Engager.Tests
 {
 	[TestClass]
 	public class BaseTest

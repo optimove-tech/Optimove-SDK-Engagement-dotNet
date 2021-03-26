@@ -1,16 +1,15 @@
 using Google.Cloud.Storage.V1;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Optimove.Optigration.Sdk.Models;
-using Optimove.Optigration.Sdk.Tests.Constants;
-using Optimove.Optigration.Sdk.Tests.Models;
+using Optimove.SDK.Engager.Models;
+using Optimove.SDK.Engager.Tests.Constants;
+using Optimove.SDK.Engager.Tests.Models;
 using SolTechnology.Avro;
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Optimove.Optigration.Sdk.Tests
+namespace Optimove.SDK.Engager.Tests
 {
 	[TestClass]
 	public class OptimoveStorageClientTest: BaseTest

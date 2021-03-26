@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Optimove.Optigration.Sdk.Tests.Constants
+﻿namespace Optimove.SDK.Engager.Tests.Constants
 {
 	public static class ConfigurationKeys
 	{

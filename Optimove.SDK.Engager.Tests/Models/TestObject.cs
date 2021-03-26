@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace Optimove.Optigration.Sdk.Tests.Models
+namespace Optimove.SDK.Engager.Tests.Models
 {
 	public class TestObject
 	{

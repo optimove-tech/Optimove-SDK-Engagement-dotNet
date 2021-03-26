@@ -1,18 +1,16 @@
 ﻿using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
-using Newtonsoft.Json;
-using Optimove.Optigration.Sdk.Exceptions;
-using Optimove.Optigration.Sdk.Interfaces;
-using Optimove.Optigration.Sdk.Models;
+using Optimove.SDK.Engager.Exceptions;
+using Optimove.SDK.Engager.Interfaces;
+using Optimove.SDK.Engager.Models;
 using SolTechnology.Avro;
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Optimove.Optigration.Sdk
+namespace Optimove.SDK.Engager
 {
 	/// <summary>
 	/// Incapsulates Optimove Cloud Storage (OCS) integration logic
