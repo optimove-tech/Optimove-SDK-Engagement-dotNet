@@ -19,6 +19,18 @@ namespace Optimove.SDK.Engager.Interfaces
 		/// Retrieves customers collection.
 		/// </summary>
 		/// <returns>Customers collection.</returns>
-		Task<List<T>> GetCustomers<T>();
+		Task<List<T>> GetAllCustomers<T>();
+
+		/// <summary>
+		/// Get Customer batches.
+		/// </summary>
+		/// <returns>Batches collection.</returns>
+		List<CustomersBatch> GetCustomerBatches();
+
+		/// <summary>
+		/// Retrieves customers by batch.
+		/// </summary>
+		/// <returns>Customers collection.</returns>
+		Task<List<T>> GetCustomersByBatch<T>(CustomersBatch batch);
 	}
 }

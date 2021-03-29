@@ -17,11 +17,24 @@ namespace Optimove.SDK.Engager
 	/// </summary>
 	public class OptimoveStorageClient: IOptimoveStorageClient
 	{
+		#region Constants
+
 		private const string MetadataFileNamePrefix = "METADATA";
+		private const string AvroFileExtenssion = ".avro";
+		private const string CustomersSubFolder = "customers";
+
+		#endregion
+
+		#region Fields
+
 		private StorageClient _googleStorageClient;
 		private string _bucketName = String.Empty;
-		private string _folderPath = String.Empty;
+		private string _rootFolderPath = String.Empty;
 		private string _decryptionKey = String.Empty;
+
+		#endregion
+
+		#region Constructors
 
 		/// <summary>
 		/// Constructs OptimoveStorageClient object.
@@ -35,8 +48,12 @@ namespace Optimove.SDK.Engager
 			_googleStorageClient = StorageClient.Create(credential);
 			_decryptionKey = settings.DecryptionKey;
 			_bucketName = settings.FolderPath.Substring(0, settings.FolderPath.IndexOf('/'));
-			_folderPath = settings.FolderPath.Substring(_bucketName.Length + 1);
+			_rootFolderPath = settings.FolderPath.Substring(_bucketName.Length + 1);
 		}
+
+		#endregion
+
+		#region Public Methods
 
 		/// <summary>
 		/// Retrieves customers Metadata.
@@ -46,7 +63,7 @@ namespace Optimove.SDK.Engager
 		{
 			try
 			{
-				var fileInfo = GetFiles(_bucketName, $"{_folderPath}/{MetadataFileNamePrefix}").Single();
+				var fileInfo = GetFiles(_bucketName, $"{_rootFolderPath}/{MetadataFileNamePrefix}").Single();
 				if (fileInfo == null)
 				{
 					return null;
@@ -62,21 +79,42 @@ namespace Optimove.SDK.Engager
 		}
 
 		/// <summary>
-		/// Retrieves customers collection.
+		/// Get Customer batches.
 		/// </summary>
-		/// <returns>Customers collection.</returns>
-		public async Task<List<T>> GetCustomers<T>()
+		/// <returns>Batches collection.</returns>
+		public List<CustomersBatch> GetCustomerBatches()
 		{
 			try
 			{
-				var customers = new List<T>();
-				var files = GetFiles(_bucketName, _folderPath).Where(f => !f.Name.StartsWith($"{_folderPath}/{MetadataFileNamePrefix}"));
+				var batches = new List<CustomersBatch>();
+				var files = GetFiles(_bucketName, $"{_rootFolderPath}/{CustomersSubFolder}/");
 				foreach (var file in files)
 				{
-					var avro = await DownloadFile(_bucketName, file.Name, _decryptionKey);
-					var batch = AvroConvert.Deserialize<List<T>>(avro);
-					customers.AddRange(batch);
+					var batch = new CustomersBatch()
+					{
+						Name = file.Name,
+						Id = file.Id.Substring(file.Id.LastIndexOf("/") + 1),
+					};
+					batches.Add(batch);
 				}
+				return batches;
+			}
+			catch (Exception ex)
+			{
+				throw new OptimoveException(ex.Message, ex);
+			}
+		}
+
+		/// <summary>
+		/// Retrieves customers collection.
+		/// </summary>
+		/// <returns>Customers collection.</returns>
+		public async Task<List<T>> GetAllCustomers<T>()
+		{
+			try
+			{
+				var path = $"{_rootFolderPath}/{CustomersSubFolder}/";
+				var customers = await GetCustomers<T>(path);
 				return customers;
 			}
 			catch(Exception ex)
@@ -84,6 +122,27 @@ namespace Optimove.SDK.Engager
 				throw new OptimoveException(ex.Message, ex);
 			}
 		}
+
+		/// <summary>
+		/// Retrieves customers by batch.
+		/// </summary>
+		/// <returns>Customers collection.</returns>
+		public async Task<List<T>> GetCustomersByBatch<T>(CustomersBatch batch)
+		{
+			try
+			{
+				var customers = await GetCustomers<T>(batch.Name);
+				return customers;
+			}
+			catch (Exception ex)
+			{
+				throw new OptimoveException(ex.Message, ex);
+			}
+		}
+
+		#endregion
+
+		#region Private Methods
 
 		/// <summary>
 		/// Download file.
@@ -115,8 +174,30 @@ namespace Optimove.SDK.Engager
 		/// <returns>File metadata.</returns>
 		private List<Google.Apis.Storage.v1.Data.Object> GetFiles(string bucketName, string filePath)
 		{
-			var files = _googleStorageClient.ListObjects(bucketName, filePath, new ListObjectsOptions()).ToList();
-			return files;
+			var files = _googleStorageClient.ListObjects(bucketName, filePath, null)
+											.Where(f => f.Name.EndsWith(AvroFileExtenssion));
+			return files.ToList();
 		}
+
+		/// <summary>
+		/// Get customers by avro file prefix
+		/// </summary>
+		/// <typeparam name="T">Reference to the customer type.</typeparam>
+		/// <param name="prefix">Avro file prefix</param>
+		/// <returns>Customers collection.</returns>
+		private async Task<List<T>> GetCustomers<T>(string prefix)
+		{
+			var customers = new List<T>();
+			var files = GetFiles(_bucketName, prefix);
+			foreach (var file in files)
+			{
+				var avro = await DownloadFile(_bucketName, file.Name, _decryptionKey);
+				var batch = AvroConvert.Deserialize<List<T>>(avro);
+				customers.AddRange(batch);
+			}
+			return customers;
+		}
+
+		#endregion
 	}
 }

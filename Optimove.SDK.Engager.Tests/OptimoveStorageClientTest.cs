@@ -14,6 +14,8 @@ namespace Optimove.SDK.Engager.Tests
 	[TestClass]
 	public class OptimoveStorageClientTest: BaseTest
 	{
+		#region Tests
+
 		[TestMethod]
 		public async Task GetMetadataTest()
 		{
@@ -35,7 +37,7 @@ namespace Optimove.SDK.Engager.Tests
 		}
 
 		[TestMethod]
-		public async Task GetCustomersTest()
+		public void GetCustomerBatchesTest()
 		{
 			var bucketName = Configuration[ConfigurationKeys.FolderPath].Substring(0, Configuration[ConfigurationKeys.FolderPath].IndexOf('/'));
 			var folderPath = Configuration[ConfigurationKeys.FolderPath].Substring(bucketName.Length + 1);
@@ -47,10 +49,57 @@ namespace Optimove.SDK.Engager.Tests
 				FolderPath = Configuration[ConfigurationKeys.FolderPath],
 			};
 			var storageClient = new OptimoveStorageClient(settings);
-			var customers = await storageClient.GetCustomers<TestObject>();
-			Assert.AreEqual(customers.Count, 10);
+			var batches = storageClient.GetCustomerBatches();
+			Assert.IsTrue(batches.Count > 0);
 			GoogleStorageClient.DeleteObject(bucketName, fileInfo.Name);
 		}
+
+		[TestMethod]
+		public async Task GetAllCustomersTest()
+		{
+			var bucketName = Configuration[ConfigurationKeys.FolderPath].Substring(0, Configuration[ConfigurationKeys.FolderPath].IndexOf('/'));
+			var folderPath = Configuration[ConfigurationKeys.FolderPath].Substring(bucketName.Length + 1);
+			var fileInfo1 = UploadCustomersFile(bucketName, $"{folderPath}/customers");
+			var fileInfo2 = UploadCustomersFile(bucketName, $"{folderPath}/customers");
+			var settings = new OptimoveStorageClientSettings
+			{
+				ServiceAccount = Configuration[ConfigurationKeys.ServiceAccount],
+				DecryptionKey = Configuration[ConfigurationKeys.DecryptionKey],
+				FolderPath = Configuration[ConfigurationKeys.FolderPath],
+			};
+			var storageClient = new OptimoveStorageClient(settings);
+			var customers = await storageClient.GetAllCustomers<TestObject>();
+			Assert.AreEqual(customers.Count, 20);
+			GoogleStorageClient.DeleteObject(bucketName, fileInfo1.Name);
+			GoogleStorageClient.DeleteObject(bucketName, fileInfo2.Name);
+		}
+
+		[TestMethod]
+		public async Task GetCustomersByBatchTest()
+		{
+			var bucketName = Configuration[ConfigurationKeys.FolderPath].Substring(0, Configuration[ConfigurationKeys.FolderPath].IndexOf('/'));
+			var folderPath = Configuration[ConfigurationKeys.FolderPath].Substring(bucketName.Length + 1);
+			var fileInfo1 = UploadCustomersFile(bucketName, $"{folderPath}/customers");
+			var fileInfo2 = UploadCustomersFile(bucketName, $"{folderPath}/customers");
+			var settings = new OptimoveStorageClientSettings
+			{
+				ServiceAccount = Configuration[ConfigurationKeys.ServiceAccount],
+				DecryptionKey = Configuration[ConfigurationKeys.DecryptionKey],
+				FolderPath = Configuration[ConfigurationKeys.FolderPath],
+			};
+			var storageClient = new OptimoveStorageClient(settings);
+			foreach(var batch in storageClient.GetCustomerBatches())
+			{
+				var customers = await storageClient.GetCustomersByBatch<TestObject>(batch);
+				Assert.AreEqual(customers.Count, 10);
+			}
+			GoogleStorageClient.DeleteObject(bucketName, fileInfo1.Name);
+			GoogleStorageClient.DeleteObject(bucketName, fileInfo2.Name);
+		}
+
+		#endregion
+
+		#region Private Methods
 
 		private Google.Apis.Storage.v1.Data.Object UploadCustomersFile(string bucketName, string folderPath)
 		{
@@ -112,5 +161,7 @@ namespace Optimove.SDK.Engager.Tests
 			}
 			return uploadOptions;
 		}
+
+		#endregion
 	}
 }

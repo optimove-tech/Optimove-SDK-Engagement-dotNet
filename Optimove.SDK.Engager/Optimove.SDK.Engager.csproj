@@ -7,7 +7,7 @@
     <Authors>Optimove</Authors>
     <Description>SDK for Engagers intergration with Optimove</Description>
     <PackageProjectUrl>https://www.optimove.com/</PackageProjectUrl>
-    <PackageIcon>optimove_logo.jpg</PackageIcon>
+    <PackageIcon>optimove_logo.png</PackageIcon>
     <RepositoryUrl>https://github.com/optimove-tech/Optimove-SDK-Engagement-dotNet.git</RepositoryUrl>
     <PackageId>OptimoveSdk.Engager.Integration</PackageId>
     <PackageTags>Optimove, SDK, Engagement, Engager, Integration</PackageTags>
@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\..\1\optimove_logo.jpg">
+    <None Include="optimove_logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
