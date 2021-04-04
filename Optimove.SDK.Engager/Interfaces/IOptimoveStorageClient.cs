@@ -16,12 +16,6 @@ namespace Optimove.SDK.Engager.Interfaces
 		Task<Metadata> GetMetadata();
 
 		/// <summary>
-		/// Retrieves customers collection.
-		/// </summary>
-		/// <returns>Customers collection.</returns>
-		Task<List<T>> GetAllCustomers<T>();
-
-		/// <summary>
 		/// Get Customer batches.
 		/// </summary>
 		/// <returns>Batches collection.</returns>

@@ -55,26 +55,6 @@ namespace Optimove.SDK.Engager.Tests
 		}
 
 		[TestMethod]
-		public async Task GetAllCustomersTest()
-		{
-			var bucketName = Configuration[ConfigurationKeys.FolderPath].Substring(0, Configuration[ConfigurationKeys.FolderPath].IndexOf('/'));
-			var folderPath = Configuration[ConfigurationKeys.FolderPath].Substring(bucketName.Length + 1);
-			var fileInfo1 = UploadCustomersFile(bucketName, $"{folderPath}/customers");
-			var fileInfo2 = UploadCustomersFile(bucketName, $"{folderPath}/customers");
-			var settings = new OptimoveStorageClientSettings
-			{
-				ServiceAccount = Configuration[ConfigurationKeys.ServiceAccount],
-				DecryptionKey = Configuration[ConfigurationKeys.DecryptionKey],
-				FolderPath = Configuration[ConfigurationKeys.FolderPath],
-			};
-			var storageClient = new OptimoveStorageClient(settings);
-			var customers = await storageClient.GetAllCustomers<TestObject>();
-			Assert.AreEqual(customers.Count, 20);
-			GoogleStorageClient.DeleteObject(bucketName, fileInfo1.Name);
-			GoogleStorageClient.DeleteObject(bucketName, fileInfo2.Name);
-		}
-
-		[TestMethod]
 		public async Task GetCustomersByBatchTest()
 		{
 			var bucketName = Configuration[ConfigurationKeys.FolderPath].Substring(0, Configuration[ConfigurationKeys.FolderPath].IndexOf('/'));

@@ -106,24 +106,6 @@ namespace Optimove.SDK.Engager
 		}
 
 		/// <summary>
-		/// Retrieves customers collection.
-		/// </summary>
-		/// <returns>Customers collection.</returns>
-		public async Task<List<T>> GetAllCustomers<T>()
-		{
-			try
-			{
-				var path = $"{_rootFolderPath}/{CustomersSubFolder}/";
-				var customers = await GetCustomers<T>(path);
-				return customers;
-			}
-			catch(Exception ex)
-			{
-				throw new OptimoveException(ex.Message, ex);
-			}
-		}
-
-		/// <summary>
 		/// Retrieves customers by batch.
 		/// </summary>
 		/// <returns>Customers collection.</returns>
