@@ -8,19 +8,19 @@ namespace Optimove.SDK.Engager.Models
 	public class Metadata
 	{
 		/// <summary>
-		/// Plan ID
+		/// Campaign Plan ID
 		/// </summary>
-		public int PlanID { get; set; }
+		public int CampaignPlanID { get; set; }
 
 		/// <summary>
-		/// Action Serial
+		/// Campaign ID
 		/// </summary>
-		public int ActionSerial { get; set; }
+		public int CampaignID { get; set; }
 
 		/// <summary>
-		/// Plan Detail ID
+		/// Plan Detail Channe lID
 		/// </summary>
-		public int PlanDetailID { get; set; }
+		public int PlanDetailChannelID { get; set; }
 
 		/// <summary>
 		/// Engagement ID
