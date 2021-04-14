@@ -1,5 +1,8 @@
 ﻿namespace Optimove.SDK.Engager.Models
 {
+	/// <summary>
+	/// Optimove Storage Client Settings
+	/// </summary>
 	public class OptimoveStorageClientSettings
 	{
 		/// <summary>
