@@ -1,5 +1,6 @@
 ﻿using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
+using Newtonsoft.Json;
 using Optimove.SDK.Engager.Exceptions;
 using Optimove.SDK.Engager.Interfaces;
 using Optimove.SDK.Engager.Models;
@@ -42,13 +43,17 @@ namespace Optimove.SDK.Engager
 		/// <param name="settings">Optimove Cloud Storage Client configuration settings.</param>
 		public OptimoveStorageClient(OptimoveStorageClientSettings settings)
 		{
-			var base64EncodedBytes = System.Convert.FromBase64String(settings.ServiceAccount);
-			var jsonCredentials = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
-			var credential = GoogleCredential.FromJson(jsonCredentials);
-			_googleStorageClient = StorageClient.Create(credential);
-			_decryptionKey = settings.DecryptionKey;
-			_bucketName = settings.FolderPath.Substring(0, settings.FolderPath.IndexOf('/'));
-			_rootFolderPath = settings.FolderPath.Substring(_bucketName.Length + 1);
+			Initialize(settings);
+		}
+
+		/// <summary>
+		/// Constructs OptimoveStorageClient object.
+		/// </summary>
+		/// <param name="jsonSettings">Optimove Cloud Storage Client configuration settings.</param>
+		public OptimoveStorageClient(string jsonSettings)
+		{
+			var settings = JsonConvert.DeserializeObject<OptimoveStorageClientSettings>(jsonSettings);
+			Initialize(settings);
 		}
 
 		#endregion
@@ -125,6 +130,17 @@ namespace Optimove.SDK.Engager
 		#endregion
 
 		#region Private Methods
+
+		private void Initialize(OptimoveStorageClientSettings settings)
+		{
+			var base64EncodedBytes = System.Convert.FromBase64String(settings.ServiceAccount);
+			var jsonCredentials = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+			var credential = GoogleCredential.FromJson(jsonCredentials);
+			_googleStorageClient = StorageClient.Create(credential);
+			_decryptionKey = settings.Key;
+			_bucketName = settings.FolderPath.Substring(0, settings.FolderPath.IndexOf('/'));
+			_rootFolderPath = settings.FolderPath.Substring(_bucketName.Length + 1);
+		}
 
 		/// <summary>
 		/// Download file.

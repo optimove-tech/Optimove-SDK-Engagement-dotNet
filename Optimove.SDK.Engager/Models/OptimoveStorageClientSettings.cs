@@ -13,7 +13,7 @@
 		/// <summary>
 		/// Key for data decryption.
 		/// </summary>
-		public string DecryptionKey { get; set; }
+		public string Key { get; set; }
 
 		/// <summary>
 		/// Cloud folder's path.

@@ -26,7 +26,7 @@ namespace Optimove.SDK.Engager.Tests
 			var settings = new OptimoveStorageClientSettings
 			{
 				ServiceAccount = Configuration[ConfigurationKeys.ServiceAccount],
-				DecryptionKey = Configuration[ConfigurationKeys.DecryptionKey],
+				Key = Configuration[ConfigurationKeys.DecryptionKey],
 				FolderPath = Configuration[ConfigurationKeys.FolderPath],
 			};
 			var storageClient = new OptimoveStorageClient(settings);
@@ -45,7 +45,7 @@ namespace Optimove.SDK.Engager.Tests
 			var settings = new OptimoveStorageClientSettings
 			{
 				ServiceAccount = Configuration[ConfigurationKeys.ServiceAccount],
-				DecryptionKey = Configuration[ConfigurationKeys.DecryptionKey],
+				Key = Configuration[ConfigurationKeys.DecryptionKey],
 				FolderPath = Configuration[ConfigurationKeys.FolderPath],
 			};
 			var storageClient = new OptimoveStorageClient(settings);
@@ -64,7 +64,7 @@ namespace Optimove.SDK.Engager.Tests
 			var settings = new OptimoveStorageClientSettings
 			{
 				ServiceAccount = Configuration[ConfigurationKeys.ServiceAccount],
-				DecryptionKey = Configuration[ConfigurationKeys.DecryptionKey],
+				Key = Configuration[ConfigurationKeys.DecryptionKey],
 				FolderPath = Configuration[ConfigurationKeys.FolderPath],
 			};
 			var storageClient = new OptimoveStorageClient(settings);
