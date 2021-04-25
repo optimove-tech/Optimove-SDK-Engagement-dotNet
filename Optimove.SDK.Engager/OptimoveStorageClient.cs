@@ -22,6 +22,7 @@ namespace Optimove.SDK.Engager
 
 		private const string MetadataFileNamePrefix = "METADATA";
 		private const string AvroFileExtenssion = ".avro";
+		private const string JsonFileExtenssion = ".json";
 		private const string CustomersSubFolder = "customers";
 
 		#endregion
@@ -68,13 +69,14 @@ namespace Optimove.SDK.Engager
 		{
 			try
 			{
-				var fileInfo = GetFiles(_bucketName, $"{_rootFolderPath}/{MetadataFileNamePrefix}").Single();
+				var fileInfo = GetJsonFiles(_bucketName, $"{_rootFolderPath}/{MetadataFileNamePrefix}").Single();
 				if (fileInfo == null)
 				{
 					return null;
 				}
 				var data = await DownloadFile(_bucketName, fileInfo.Name, _decryptionKey);
-				var metadata = AvroConvert.Deserialize<Metadata>(data);
+				var dataString = System.Text.Encoding.UTF8.GetString(data);
+				var metadata = JsonConvert.DeserializeObject<Metadata>(dataString);
 				return metadata;
 			}
 			catch(Exception ex)
@@ -92,7 +94,7 @@ namespace Optimove.SDK.Engager
 			try
 			{
 				var batches = new List<CustomersBatch>();
-				var files = GetFiles(_bucketName, $"{_rootFolderPath}/{CustomersSubFolder}/");
+				var files = GetAvroFiles(_bucketName, $"{_rootFolderPath}/{CustomersSubFolder}/");
 				foreach (var file in files)
 				{
 					var batch = new CustomersBatch()
@@ -170,10 +172,16 @@ namespace Optimove.SDK.Engager
 		/// <param name="bucketName">Bucket name.</param>
 		/// <param name="filePath">File path.</param>
 		/// <returns>File metadata.</returns>
-		private List<Google.Apis.Storage.v1.Data.Object> GetFiles(string bucketName, string filePath)
+		private List<Google.Apis.Storage.v1.Data.Object> GetAvroFiles(string bucketName, string filePath)
 		{
 			var files = _googleStorageClient.ListObjects(bucketName, filePath, null)
 											.Where(f => f.Name.EndsWith(AvroFileExtenssion));
+			return files.ToList();
+		}
+		private List<Google.Apis.Storage.v1.Data.Object> GetJsonFiles(string bucketName, string filePath)
+		{
+			var files = _googleStorageClient.ListObjects(bucketName, filePath, null)
+											.Where(f => f.Name.EndsWith(JsonFileExtenssion));
 			return files.ToList();
 		}
 
@@ -186,7 +194,7 @@ namespace Optimove.SDK.Engager
 		private async Task<List<T>> GetCustomers<T>(string prefix)
 		{
 			var customers = new List<T>();
-			var files = GetFiles(_bucketName, prefix);
+			var files = GetAvroFiles(_bucketName, prefix);
 			foreach (var file in files)
 			{
 				var avro = await DownloadFile(_bucketName, file.Name, _decryptionKey);

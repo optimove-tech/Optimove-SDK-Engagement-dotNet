@@ -1,5 +1,6 @@
 using Google.Cloud.Storage.V1;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using Optimove.SDK.Engager.Models;
 using Optimove.SDK.Engager.Tests.Constants;
 using Optimove.SDK.Engager.Tests.Models;
@@ -7,6 +8,7 @@ using SolTechnology.Avro;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Optimove.SDK.Engager.Tests
@@ -128,8 +130,8 @@ namespace Optimove.SDK.Engager.Tests
 				TemplateID = 321,
 				TemplateName = "Template 1",
 			};
-			var stream = new MemoryStream(AvroConvert.Serialize(metadata));
-			return GoogleStorageClient.UploadObject(bucketName, $"{folderPath}/METADATA_{DateTime.Now.Ticks}.avro", null, stream, GetUploadUptions());
+			var stream = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(metadata)));
+			return GoogleStorageClient.UploadObject(bucketName, $"{folderPath}/METADATA_{DateTime.Now.Ticks}.json", null, stream, GetUploadUptions());
 		}
 
 		private UploadObjectOptions GetUploadUptions()
