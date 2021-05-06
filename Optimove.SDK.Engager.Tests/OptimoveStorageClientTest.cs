@@ -21,15 +21,17 @@ namespace Optimove.SDK.Engager.Tests
 		[TestMethod]
 		public async Task GetMetadataTest()
 		{
-			var bucketName = Configuration[ConfigurationKeys.FolderPath].Substring(0, Configuration[ConfigurationKeys.FolderPath].IndexOf('/'));
-			var folderPath = Configuration[ConfigurationKeys.FolderPath].Substring(bucketName.Length + 1);
+			var bucketName = Configuration[ConfigurationKeys.BucketName];
+			var rootFolderPath = Configuration[ConfigurationKeys.RootFolderPath];
 			var channelName = "Channel 1";
-			var fileInfo = UploadMetadataFile(bucketName, folderPath, channelName);
+			var fileInfo = UploadMetadataFile(bucketName, rootFolderPath, channelName);
 			var settings = new OptimoveStorageClientSettings
 			{
+				BucketName = Configuration[ConfigurationKeys.BucketName],
+				CustomersFolderPath = $"{rootFolderPath}/customers",
 				ServiceAccount = Configuration[ConfigurationKeys.ServiceAccount],
-				Key = Configuration[ConfigurationKeys.DecryptionKey],
-				FolderPath = Configuration[ConfigurationKeys.FolderPath],
+				DecryptionKey = Configuration[ConfigurationKeys.DecryptionKey],
+				MetadataFilePath = fileInfo.Name,
 			};
 			var storageClient = new OptimoveStorageClient(settings);
 			var metadata = await storageClient.GetMetadata();
@@ -41,14 +43,16 @@ namespace Optimove.SDK.Engager.Tests
 		[TestMethod]
 		public void GetCustomerBatchesTest()
 		{
-			var bucketName = Configuration[ConfigurationKeys.FolderPath].Substring(0, Configuration[ConfigurationKeys.FolderPath].IndexOf('/'));
-			var folderPath = Configuration[ConfigurationKeys.FolderPath].Substring(bucketName.Length + 1);
-			var fileInfo = UploadCustomersFile(bucketName, folderPath);
+			var bucketName = Configuration[ConfigurationKeys.BucketName];
+			var rootFolderPath = Configuration[ConfigurationKeys.RootFolderPath];
+			var fileInfo = UploadCustomersFile(bucketName, $"{rootFolderPath}/customers");
 			var settings = new OptimoveStorageClientSettings
 			{
+				BucketName = Configuration[ConfigurationKeys.BucketName],
+				CustomersFolderPath = $"{rootFolderPath}/customers",
 				ServiceAccount = Configuration[ConfigurationKeys.ServiceAccount],
-				Key = Configuration[ConfigurationKeys.DecryptionKey],
-				FolderPath = Configuration[ConfigurationKeys.FolderPath],
+				DecryptionKey = Configuration[ConfigurationKeys.DecryptionKey],
+				MetadataFilePath = fileInfo.Name,
 			};
 			var storageClient = new OptimoveStorageClient(settings);
 			var batches = storageClient.GetCustomerBatches();
@@ -59,15 +63,16 @@ namespace Optimove.SDK.Engager.Tests
 		[TestMethod]
 		public async Task GetCustomersByBatchTest()
 		{
-			var bucketName = Configuration[ConfigurationKeys.FolderPath].Substring(0, Configuration[ConfigurationKeys.FolderPath].IndexOf('/'));
-			var folderPath = Configuration[ConfigurationKeys.FolderPath].Substring(bucketName.Length + 1);
-			var fileInfo1 = UploadCustomersFile(bucketName, $"{folderPath}/customers");
-			var fileInfo2 = UploadCustomersFile(bucketName, $"{folderPath}/customers");
+			var bucketName = Configuration[ConfigurationKeys.BucketName];
+			var rootFolderPath = Configuration[ConfigurationKeys.RootFolderPath];
+			var fileInfo1 = UploadCustomersFile(bucketName, $"{rootFolderPath}/customers");
+			var fileInfo2 = UploadCustomersFile(bucketName, $"{rootFolderPath}/customers");
 			var settings = new OptimoveStorageClientSettings
 			{
+				BucketName = Configuration[ConfigurationKeys.BucketName],
+				CustomersFolderPath = $"{rootFolderPath}/customers",
 				ServiceAccount = Configuration[ConfigurationKeys.ServiceAccount],
-				Key = Configuration[ConfigurationKeys.DecryptionKey],
-				FolderPath = Configuration[ConfigurationKeys.FolderPath],
+				DecryptionKey = Configuration[ConfigurationKeys.DecryptionKey],
 			};
 			var storageClient = new OptimoveStorageClient(settings);
 			foreach(var batch in storageClient.GetCustomerBatches())

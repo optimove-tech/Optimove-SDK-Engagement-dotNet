@@ -4,6 +4,7 @@
 	{
 		public const string ServiceAccount = "ServiceAccount";
 		public const string DecryptionKey = "DecryptionKey";
-		public const string FolderPath = "FolderPath";
+		public const string RootFolderPath = "RootFolderPath";
+		public const string BucketName = "BucketName";
 	}
 }

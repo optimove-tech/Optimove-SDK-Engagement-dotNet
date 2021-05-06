@@ -18,21 +18,10 @@ namespace Optimove.SDK.Engager
 	/// </summary>
 	public class OptimoveStorageClient: IOptimoveStorageClient
 	{
-		#region Constants
-
-		private const string MetadataFileNamePrefix = "METADATA";
-		private const string AvroFileExtenssion = ".avro";
-		private const string JsonFileExtenssion = ".json";
-		private const string CustomersSubFolder = "customers";
-
-		#endregion
-
 		#region Fields
 
 		private StorageClient _googleStorageClient;
-		private string _bucketName = String.Empty;
-		private string _rootFolderPath = String.Empty;
-		private string _decryptionKey = String.Empty;
+		private OptimoveStorageClientSettings _settings;
 
 		#endregion
 
@@ -69,12 +58,12 @@ namespace Optimove.SDK.Engager
 		{
 			try
 			{
-				var fileInfo = GetJsonFiles(_bucketName, $"{_rootFolderPath}/{MetadataFileNamePrefix}").Single();
+				var fileInfo = GetFiles(_settings.BucketName, _settings.MetadataFilePath).Single();
 				if (fileInfo == null)
 				{
 					return null;
 				}
-				var data = await DownloadFile(_bucketName, fileInfo.Name, _decryptionKey);
+				var data = await DownloadFile(_settings.BucketName, _settings.MetadataFilePath, _settings.DecryptionKey);
 				var dataString = System.Text.Encoding.UTF8.GetString(data);
 				var metadata = JsonConvert.DeserializeObject<Metadata>(dataString);
 				return metadata;
@@ -94,7 +83,7 @@ namespace Optimove.SDK.Engager
 			try
 			{
 				var batches = new List<CustomersBatch>();
-				var files = GetAvroFiles(_bucketName, $"{_rootFolderPath}/{CustomersSubFolder}/");
+				var files = GetFiles(_settings.BucketName, _settings.CustomersFolderPath);
 				foreach (var file in files)
 				{
 					var batch = new CustomersBatch()
@@ -139,9 +128,7 @@ namespace Optimove.SDK.Engager
 			var jsonCredentials = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
 			var credential = GoogleCredential.FromJson(jsonCredentials);
 			_googleStorageClient = StorageClient.Create(credential);
-			_decryptionKey = settings.Key;
-			_bucketName = settings.FolderPath.Substring(0, settings.FolderPath.IndexOf('/'));
-			_rootFolderPath = settings.FolderPath.Substring(_bucketName.Length + 1);
+			_settings = settings;
 		}
 
 		/// <summary>
@@ -172,16 +159,9 @@ namespace Optimove.SDK.Engager
 		/// <param name="bucketName">Bucket name.</param>
 		/// <param name="filePath">File path.</param>
 		/// <returns>File metadata.</returns>
-		private List<Google.Apis.Storage.v1.Data.Object> GetAvroFiles(string bucketName, string filePath)
+		private List<Google.Apis.Storage.v1.Data.Object> GetFiles(string bucketName, string filePath)
 		{
-			var files = _googleStorageClient.ListObjects(bucketName, filePath, null)
-											.Where(f => f.Name.EndsWith(AvroFileExtenssion));
-			return files.ToList();
-		}
-		private List<Google.Apis.Storage.v1.Data.Object> GetJsonFiles(string bucketName, string filePath)
-		{
-			var files = _googleStorageClient.ListObjects(bucketName, filePath, null)
-											.Where(f => f.Name.EndsWith(JsonFileExtenssion));
+			var files = _googleStorageClient.ListObjects(bucketName, filePath, null);
 			return files.ToList();
 		}
 
@@ -194,10 +174,10 @@ namespace Optimove.SDK.Engager
 		private async Task<List<T>> GetCustomers<T>(string prefix)
 		{
 			var customers = new List<T>();
-			var files = GetAvroFiles(_bucketName, prefix);
+			var files = GetFiles(_settings.BucketName, prefix);
 			foreach (var file in files)
 			{
-				var avro = await DownloadFile(_bucketName, file.Name, _decryptionKey);
+				var avro = await DownloadFile(_settings.BucketName, file.Name, _settings.DecryptionKey);
 				var batch = AvroConvert.Deserialize<List<T>>(avro);
 				customers.AddRange(batch);
 			}

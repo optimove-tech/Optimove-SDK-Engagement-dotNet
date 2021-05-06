@@ -6,6 +6,21 @@
 	public class OptimoveStorageClientSettings
 	{
 		/// <summary>
+		/// Cloud Bucket name.
+		/// </summary>
+		public string BucketName { get; set; }
+
+		/// <summary>
+		/// Customers folder path.
+		/// </summary>
+		public string CustomersFolderPath { get; set; }
+
+		/// <summary>
+		/// Metadata file path.
+		/// </summary>
+		public string MetadataFilePath { get; set; }
+
+		/// <summary>
 		/// Optimove Cloud Storage access credentials.
 		/// </summary>
 		public string ServiceAccount { get; set; }
@@ -13,11 +28,6 @@
 		/// <summary>
 		/// Key for data decryption.
 		/// </summary>
-		public string Key { get; set; }
-
-		/// <summary>
-		/// Cloud folder's path.
-		/// </summary>
-		public string FolderPath { get; set; }
+		public string DecryptionKey { get; set; }
 	}
 }
