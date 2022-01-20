@@ -20,11 +20,7 @@ namespace Optimove.SDK.Engager.Tests
 			var builder = new ConfigurationBuilder();
 			builder.AddUserSecrets<OptimoveStorageClientTest>();
 			Configuration = builder.Build();
-
-			var base64EncodedBytes = System.Convert.FromBase64String(Configuration[ConfigurationKeys.ServiceAccount]);
-			var jsonCredentials = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
-			var credential = GoogleCredential.FromJson(jsonCredentials);
-			GoogleStorageClient = StorageClient.Create(credential);
+			GoogleStorageClient = StorageClient.Create();
 		}
 	}
 }
