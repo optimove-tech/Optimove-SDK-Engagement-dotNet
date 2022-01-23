@@ -85,6 +85,31 @@ namespace Optimove.SDK.Engager.Tests
 			GoogleStorageClient.DeleteObject(bucketName, fileInfo2.Name);
 		}
 
+		[TestMethod]
+		public async Task GetCustomersByBatchTestAsJson()
+		{
+			var bucketName = Configuration[ConfigurationKeys.BucketName];
+			var rootFolderPath = Configuration[ConfigurationKeys.RootFolderPath];
+			var fileInfo1 = UploadCustomersFile(bucketName, $"{rootFolderPath}/customers");
+			var fileInfo2 = UploadCustomersFile(bucketName, $"{rootFolderPath}/customers");
+			var settings = new EngagerSDKSettings
+			{
+				BucketName = Configuration[ConfigurationKeys.BucketName],
+				CustomersFolderPath = $"{rootFolderPath}/customers",
+				ServiceAccount = Configuration[ConfigurationKeys.ServiceAccount],
+				DecryptionKey = Configuration[ConfigurationKeys.DecryptionKey],
+			};
+			var storageClient = new EngagerSDK(settings);
+			int batchesNumber = storageClient.GetCustomerBatchesNumber();
+			for (int i = 0; i < batchesNumber; i++)
+			{
+				var customers = await storageClient.GetCustomersByBatchIdAsJson(i);
+				Assert.AreNotEqual(customers, "");
+			}
+			GoogleStorageClient.DeleteObject(bucketName, fileInfo1.Name);
+			GoogleStorageClient.DeleteObject(bucketName, fileInfo2.Name);
+		}
+
 		#endregion
 
 		#region Private Methods
