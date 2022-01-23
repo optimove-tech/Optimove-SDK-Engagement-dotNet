@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Optimove Storage Client Settings
 	/// </summary>
-	public class OptimoveStorageClientSettings
+	public class EngagerSDKSettings
 	{
 		/// <summary>
 		/// Cloud Bucket name.

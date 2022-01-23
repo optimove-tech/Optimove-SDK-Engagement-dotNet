@@ -16,12 +16,13 @@ namespace Optimove.SDK.Engager
 	/// <summary>
 	/// Incapsulates Optimove Cloud Storage (OCS) integration logic
 	/// </summary>
-	public class OptimoveStorageClient: IOptimoveStorageClient
+	public class EngagerSDK: IEngagerSDK
 	{
 		#region Fields
 
 		private StorageClient _googleStorageClient;
-		private OptimoveStorageClientSettings _settings;
+		private EngagerSDKSettings _settings;
+		private Dictionary<int, CustomersBatch> _customersBatchs;
 
 		#endregion
 
@@ -31,7 +32,7 @@ namespace Optimove.SDK.Engager
 		/// Constructs OptimoveStorageClient object.
 		/// </summary>
 		/// <param name="settings">Optimove Cloud Storage Client configuration settings.</param>
-		public OptimoveStorageClient(OptimoveStorageClientSettings settings)
+		public EngagerSDK(EngagerSDKSettings settings)
 		{
 			Initialize(settings);
 		}
@@ -40,9 +41,9 @@ namespace Optimove.SDK.Engager
 		/// Constructs OptimoveStorageClient object.
 		/// </summary>
 		/// <param name="jsonSettings">Optimove Cloud Storage Client configuration settings.</param>
-		public OptimoveStorageClient(string jsonSettings)
+		public EngagerSDK(string jsonSettings)
 		{
-			var settings = JsonConvert.DeserializeObject<OptimoveStorageClientSettings>(jsonSettings);
+			var settings = JsonConvert.DeserializeObject<EngagerSDKSettings>(jsonSettings);
 			Initialize(settings);
 		}
 
@@ -75,25 +76,25 @@ namespace Optimove.SDK.Engager
 		}
 
 		/// <summary>
-		/// Get Customer batches.
+		/// Get Customer batches number.
 		/// </summary>
-		/// <returns>Batches collection.</returns>
-		public List<CustomersBatch> GetCustomerBatches()
+		/// <returns>Batches number.</returns>
+		public int GetCustomerBatchesNumber()
 		{
 			try
 			{
-				var batches = new List<CustomersBatch>();
+				_customersBatchs = new Dictionary<int, CustomersBatch>();
 				var files = GetFiles(_settings.BucketName, _settings.CustomersFolderPath);
-				foreach (var file in files)
+				for (int i=0; i< files.Count; i++)
 				{
 					var batch = new CustomersBatch()
 					{
-						Name = file.Name,
-						Id = file.Id.Substring(file.Id.LastIndexOf("/") + 1),
+						Name = files[i].Name,
+						Id = files[i].Id.Substring(files[i].Id.LastIndexOf("/") + 1),
 					};
-					batches.Add(batch);
+					_customersBatchs.Add(i, batch);
 				}
-				return batches;
+				return _customersBatchs.Count;
 			}
 			catch (Exception ex)
 			{
@@ -105,11 +106,11 @@ namespace Optimove.SDK.Engager
 		/// Retrieves customers by batch.
 		/// </summary>
 		/// <returns>Customers collection.</returns>
-		public async Task<List<T>> GetCustomersByBatch<T>(CustomersBatch batch)
+		public async Task<List<T>> GetCustomersByBatchId<T>(int id)
 		{
 			try
 			{
-				var customers = await GetCustomers<T>(batch.Name);
+				var customers = await GetCustomers<T>(_customersBatchs[id].Name);
 				return customers;
 			}
 			catch (Exception ex)
@@ -122,12 +123,12 @@ namespace Optimove.SDK.Engager
 
 		#region Private Methods
 
-		private void Initialize(OptimoveStorageClientSettings settings)
+		private void Initialize(EngagerSDKSettings settings)
 		{
-			var base64EncodedBytes = System.Convert.FromBase64String(settings.ServiceAccount);
-			var jsonCredentials = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
-			var credential = GoogleCredential.FromJson(jsonCredentials);
-			_googleStorageClient = StorageClient.Create(credential);
+            var base64EncodedBytes = System.Convert.FromBase64String(settings.ServiceAccount);
+            var jsonCredentials = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+            var credential = GoogleCredential.FromJson(jsonCredentials);
+            _googleStorageClient = StorageClient.Create(credential);
 			_settings = settings;
 		}
 

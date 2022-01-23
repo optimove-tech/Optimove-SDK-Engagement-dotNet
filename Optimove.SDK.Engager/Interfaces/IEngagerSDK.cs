@@ -7,7 +7,7 @@ namespace Optimove.SDK.Engager.Interfaces
 	/// <summary>
 	/// Implementation of this interface incapsulates Optimove Cloud Storage (OCS) integration logic.
 	/// </summary>
-	public interface IOptimoveStorageClient
+	public interface IEngagerSDK
 	{
 		/// <summary>
 		/// Retrieves customers Metadata.
@@ -16,15 +16,15 @@ namespace Optimove.SDK.Engager.Interfaces
 		Task<Metadata> GetMetadata();
 
 		/// <summary>
-		/// Get Customer batches.
+		/// Get Customer batches number.
 		/// </summary>
-		/// <returns>Batches collection.</returns>
-		List<CustomersBatch> GetCustomerBatches();
+		/// <returns>Batches count.</returns>
+		int GetCustomerBatchesNumber();
 
 		/// <summary>
-		/// Retrieves customers by batch.
+		/// Retrieves customers by batch if.
 		/// </summary>
 		/// <returns>Customers collection.</returns>
-		Task<List<T>> GetCustomersByBatch<T>(CustomersBatch batch);
+		Task<List<T>> GetCustomersByBatchId<T>(int id);
 	}
 }
