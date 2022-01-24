@@ -146,7 +146,6 @@ namespace Optimove.SDK.Engager
             var jsonCredentials = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
             var credential = GoogleCredential.FromJson(jsonCredentials);
             _googleStorageClient = StorageClient.Create(credential);
-            _googleStorageClient = StorageClient.Create();
 			_settings = settings;
 		}
 
