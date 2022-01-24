@@ -142,11 +142,11 @@ namespace Optimove.SDK.Engager
 
 		private void Initialize(EngagerSDKSettings settings)
 		{
-			//var base64EncodedBytes = System.Convert.FromBase64String(settings.ServiceAccount);
-			//var jsonCredentials = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
-			//var credential = GoogleCredential.FromJson(jsonCredentials);
-			//_googleStorageClient = StorageClient.Create(credential);
-			_googleStorageClient = StorageClient.Create();
+            var base64EncodedBytes = System.Convert.FromBase64String(settings.ServiceAccount);
+            var jsonCredentials = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+            var credential = GoogleCredential.FromJson(jsonCredentials);
+            _googleStorageClient = StorageClient.Create(credential);
+            _googleStorageClient = StorageClient.Create();
 			_settings = settings;
 		}
 
