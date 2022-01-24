@@ -26,5 +26,12 @@ namespace Optimove.SDK.Engager.Interfaces
 		/// </summary>
 		/// <returns>Customers collection.</returns>
 		Task<List<T>> GetCustomersByBatchId<T>(int id);
+
+
+		/// <summary>
+		/// Retrieves customers by batch if.
+		/// </summary>
+		/// <returns>Customers collection as json</returns>
+		Task<string> GetCustomersByBatchIdAsJson(int id);
 	}
 }

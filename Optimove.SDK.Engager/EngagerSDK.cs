@@ -119,6 +119,23 @@ namespace Optimove.SDK.Engager
 			}
 		}
 
+		/// <summary>
+		/// Retrieves customers by batch.
+		/// </summary>
+		/// <returns>Customers collection as Json</returns>
+		public async Task<string> GetCustomersByBatchIdAsJson(int id)
+		{
+			try
+			{
+				var customers = await GetCustomersAsJson(_customersBatchs[id].Name);
+				return customers;
+			}
+			catch (Exception ex)
+			{
+				throw new OptimoveException(ex.Message, ex);
+			}
+		}
+
 		#endregion
 
 		#region Private Methods
@@ -183,6 +200,20 @@ namespace Optimove.SDK.Engager
 				customers.AddRange(batch);
 			}
 			return customers;
+		}
+
+		private async Task<string> GetCustomersAsJson(string prefix)
+		{
+			var customersJson = "";
+			var file = GetFiles(_settings.BucketName, prefix).FirstOrDefault();
+
+			if (file != null)
+            {
+				var avro = await DownloadFile(_settings.BucketName, file.Name, _settings.DecryptionKey);
+				customersJson = AvroConvert.Avro2Json(avro);
+			}	
+			
+			return customersJson;
 		}
 
 		#endregion
