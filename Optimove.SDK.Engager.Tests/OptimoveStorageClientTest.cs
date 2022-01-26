@@ -160,6 +160,7 @@ namespace Optimove.SDK.Engager.Tests
 				TargetGroupName = "Target Group 1",
 				TemplateID = 321,
 				TemplateName = "Template 1",
+				Duration = 4
 			};
 			var stream = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(metadata)));
 			return GoogleStorageClient.UploadObject(bucketName, $"{folderPath}/METADATA_{DateTime.Now.Ticks}.json", null, stream, GetUploadUptions());

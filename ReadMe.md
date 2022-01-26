@@ -105,12 +105,19 @@ public class Metadata
    /// Promotions
    /// </summary>
    public string Promotions { get; set; }
+   
+	/// <summary>
+	/// Duration
+	/// </summary>
+	public int Duration { get; set; }
 }
 ```
 - Get Customers by batch
+T is the type that the customer batch should be parsed into.
 ```csharp
-foreach(var batch in client.GetCustomerBatches())
+int batchesNumber = storageClient.GetCustomerBatchesNumber();
+for (int i = 0; i < batchesNumber; i++)
 {
-   var customers = await client.GetCustomersByBatch<TestCustomer>(batch);
+	var customers = await storageClient.GetCustomersByBatchId<T>(i);
 }
 ```

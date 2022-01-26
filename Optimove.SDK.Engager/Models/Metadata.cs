@@ -81,5 +81,10 @@ namespace Optimove.SDK.Engager.Models
 		/// Promotions
 		/// </summary>
 		public string Promotions { get; set; }
+
+		/// <summary>
+		/// Duration
+		/// </summary>
+		public int Duration { get; set; }
 	}
 }
