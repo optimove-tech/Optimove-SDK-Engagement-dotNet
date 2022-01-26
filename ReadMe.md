@@ -4,7 +4,8 @@ The integration flow is:
 - Add reference to the **OptimoveSdk.Engager.Integration** NuGet package
 - Create Web Hook entry point / Web Api entry point. Details should be discussed with Optimove support team.
 - Receive Web Hook notification from **Optimove Notifications Subsystem** about customers data readiness.
-  The message format is the following:
+
+The message format is the following:
 ```json
 {
   "eventTypeID": 0,
@@ -112,8 +113,10 @@ public class Metadata
 	public int Duration { get; set; }
 }
 ```
-- Get Customers by batch
+- Get Customers by batch.
+
 T is the type that the customer batch should be parsed into.
+
 ```csharp
 int batchesNumber = storageClient.GetCustomerBatchesNumber();
 for (int i = 0; i < batchesNumber; i++)
